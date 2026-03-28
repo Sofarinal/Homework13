@@ -1,5 +1,5 @@
 java
-        package org.skypro.skyshop.basket;
+        package org.skypro.skyshop.product;
 
 import org.skypro.skyshop.product.Product;
 
