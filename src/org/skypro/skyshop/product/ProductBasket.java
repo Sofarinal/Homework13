@@ -1,7 +1,4 @@
-java
-        package org.skypro.skyshop.product;
-
-import org.skypro.skyshop.product.Product;
+package org.skypro.skyshop.product;
 
 public class ProductBasket {
     private final Product[] products;
