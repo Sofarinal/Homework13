@@ -33,11 +33,16 @@ public class ProductBasket {
             System.out.println("в корзине пусто");
             return;
         }
+        int specialProduct = 0;
         for (int i = 0; i < size; i++) {
             Product product = products[i];
-            System.out.println(product.getName() + ": " + product.getPrice());
+            System.out.println(product.toString());
+            if (product.isSpecial()){
+                specialProduct++;
+            }
         }
         System.out.println("Итого: " + getTotalPrice());
+        System.out.println("Специальных товаров: " + specialProduct);
     }
 
     public boolean containsProduct(String name) {
