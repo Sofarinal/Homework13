@@ -16,7 +16,7 @@ public class App {
 
         ProductBasket basket = new ProductBasket();
 
-        System.out.println("========== ДЕМОНСТРАЦИЯ РАБОТЫ КОРЗИНЫ ==========\n");
+        System.out.println("========== ДЕМОНСТРАЦИЯ РАБОТЫ КОРЗИНЫ =========\n");
 
 
         System.out.println("1. Добавляем продукты в корзину:");
