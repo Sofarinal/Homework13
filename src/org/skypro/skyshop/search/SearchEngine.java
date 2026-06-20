@@ -14,7 +14,7 @@ public class SearchEngine {
             items[size] = item;
             size++;
         } else {
-            System.out.println("Неа!");
+            System.out.println("Неа! ");
         }
     }
 

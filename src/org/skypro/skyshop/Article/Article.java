@@ -30,7 +30,7 @@ public class Article implements Searchable{
 
     @Override
     public String getContent() {
-        return "ARTICLE";
+        return "ARTICLE ";
     }
 
     @Override
