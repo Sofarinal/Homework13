@@ -2,16 +2,19 @@ package org.skypro.skyshop;
 
 import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.product.ProductBasket;
+import org.skypro.skyshop.product.SimpleProduct;
+import org.skypro.skyshop.product.DiscountedProduct;
+import org.skypro.skyshop.product.FixPriceProduct;
 
 public class App {
     public static void main(String[] args) {
 
-        Product apple = new Product("Яблоко", 50);
-        Product banana = new Product("Банан", 80);
-        Product milk = new Product("Молоко", 120);
-        Product bread = new Product("Хлеб", 60);
-        Product cheese = new Product("Сыр", 350);
-        Product chocolate = new Product("Шоколад", 150);
+       Product apple = new SimpleProduct("Яблоко", 50);
+       Product banana = new DiscountedProduct("Банан", 80, 50);
+       Product milk = new SimpleProduct("Молоко", 120);
+       Product bread = new FixPriceProduct("Хлеб");
+       Product cheese = new SimpleProduct("Сыр", 350);
+       Product chocolate = new SimpleProduct("Шоколад", 150);
 
 
         ProductBasket basket = new ProductBasket();
