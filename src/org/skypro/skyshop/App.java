@@ -5,6 +5,9 @@ import org.skypro.skyshop.product.ProductBasket;
 import org.skypro.skyshop.product.SimpleProduct;
 import org.skypro.skyshop.product.DiscountedProduct;
 import org.skypro.skyshop.product.FixPriceProduct;
+import org.skypro.skyshop.search.SearchEngine;
+import org.skypro.skyshop.Article.Article;
+import org.skypro.skyshop.search.Searchable;
 
 public class App {
     public static void main(String[] args) {
@@ -19,7 +22,7 @@ public class App {
 
         ProductBasket basket = new ProductBasket();
 
-        System.out.println("========== ДЕМОНСТРАЦИЯ РАБОТЫ КОРЗИНЫ =========\n");
+        System.out.println("========= ДЕМОНСТРАЦИЯ РАБОТЫ КОРЗИНЫ =========\n");
 
 
         System.out.println("1. Добавляем продукты в корзину:");
@@ -65,5 +68,57 @@ public class App {
         System.out.println("    Результат: " + (basket.containsProduct("Яблоко") ? "найден" : "не найден"));
 
         System.out.println("\n========== ДЕМОНСТРАЦИЯ ЗАВЕРШЕНА ==========");
+
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ ПОИСКА ==========");
+
+        Article appleArticle = new Article("Яблоко", "Купите мне яблоко");
+        Article bananaArticle = new Article("Банан", "Хочу банан");
+        Article milkArticle = new Article("Молоко", "Зачем корове молоко?");
+
+        SearchEngine engine = new SearchEngine(15);
+        engine.add(apple);
+        engine.add(banana);
+        engine.add(milk);
+        engine.add(bread);
+        engine.add(cheese);
+        engine.add(chocolate);
+        engine.add(appleArticle);
+        engine.add(bananaArticle);
+        engine.add(milkArticle);
+
+        System.out.println("Запрос: \"яблоко\"");
+        printSearchResults(engine.search("яблоко"));
+
+        System.out.println("\nЗапрос: \"молоко\"");
+        printSearchResults(engine.search("молоко"));
+
+        System.out.println("\nЗапрос: \"хлеб\"");
+        printSearchResults(engine.search("хлеб"));
+
+        System.out.println("\nЗапрос: \"сыр\"");
+        printSearchResults(engine.search("сыр"));
+
+        System.out.println("\nЗапрос: \"корове\"");
+        printSearchResults(engine.search("корове"));
+
+        System.out.println("\nЗапрос: \"шоколад\"");
+        printSearchResults(engine.search("шоколад"));
+
+        System.out.println("\nЗапрос: \"несуществующий\"");
+        printSearchResults(engine.search("несуществующий"));
+
+    }
+
+    private static void printSearchResults(Searchable[] results) {
+        boolean found = false;
+        for (Searchable item : results) {
+            if (item != null) {
+                System.out.println("  - " + item.getStringRepresentation());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("  Ничего не найдено.");
+        }
     }
 }
