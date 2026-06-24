@@ -5,25 +5,24 @@ import org.skypro.skyshop.product.ProductBasket;
 import org.skypro.skyshop.product.SimpleProduct;
 import org.skypro.skyshop.product.DiscountedProduct;
 import org.skypro.skyshop.product.FixPriceProduct;
-import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.Article.Article;
+import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.Searchable;
+import org.skypro.skyshop.search.BestResultNotFound;
 
 public class App {
     public static void main(String[] args) {
 
-       Product apple = new SimpleProduct("Яблоко", 50);
-       Product banana = new DiscountedProduct("Банан", 80, 50);
-       Product milk = new SimpleProduct("Молоко", 120);
-       Product bread = new FixPriceProduct("Хлеб");
-       Product cheese = new SimpleProduct("Сыр", 350);
-       Product chocolate = new SimpleProduct("Шоколад", 150);
-
+        Product apple = new SimpleProduct("Яблоко", 50);
+        Product banana = new DiscountedProduct("Банан", 80, 50);
+        Product milk = new SimpleProduct("Молоко", 120);
+        Product bread = new FixPriceProduct("Хлеб");
+        Product cheese = new SimpleProduct("Сыр", 350);
+        Product chocolate = new SimpleProduct("Шоколад", 150);
 
         ProductBasket basket = new ProductBasket();
 
         System.out.println("========= ДЕМОНСТРАЦИЯ РАБОТЫ КОРЗИНЫ =========\n");
-
 
         System.out.println("1. Добавляем продукты в корзину:");
         basket.addProduct(apple);
@@ -33,25 +32,19 @@ public class App {
         basket.addProduct(cheese);
         System.out.println("   Добавлено 5 продуктов");
 
-
         System.out.println("\n2. Пытаемся добавить 6-й продукт (Шоколад):");
         basket.addProduct(chocolate);
-
 
         System.out.println("\n3. Содержимое корзины:");
         basket.printBasket();
 
-
         System.out.println("\n4. Общая стоимость корзины: " + basket.getTotalPrice());
-
 
         System.out.println("\n5. Поиск товара 'Молоко':");
         System.out.println("   Результат: " + (basket.containsProduct("Молоко") ? "найден" : "не найден"));
 
-
         System.out.println("\n6. Поиск товара 'Печенье':");
         System.out.println("   Результат: " + (basket.containsProduct("Печенье") ? "найден" : "не найден"));
-
 
         System.out.println("\n7. Очищаем корзину:");
         basket.clearBasket();
@@ -60,16 +53,14 @@ public class App {
         System.out.println("\n8. Содержимое пустой корзины:");
         basket.printBasket();
 
-
         System.out.println("\n9. Общая стоимость пустой корзины: " + basket.getTotalPrice());
-
 
         System.out.println("\n10. Поиск товара 'Яблоко' в пустой корзине:");
         System.out.println("    Результат: " + (basket.containsProduct("Яблоко") ? "найден" : "не найден"));
 
-        System.out.println("\n========== ДЕМОНСТРАЦИЯ ЗАВЕРШЕНА ==========");
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ КОРЗИНЫ ЗАВЕРШЕНА ==========\n");
 
-        System.out.println("\n========== ДЕМОНСТРАЦИЯ ПОИСКА ==========");
+        System.out.println("========== ДЕМОНСТРАЦИЯ ПОИСКА ==========\n");
 
         Article appleArticle = new Article("Яблоко", "Купите мне яблоко");
         Article bananaArticle = new Article("Банан", "Хочу банан");
@@ -107,6 +98,60 @@ public class App {
         System.out.println("\nЗапрос: \"несуществующий\"");
         printSearchResults(engine.search("несуществующий"));
 
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ ИСКЛЮЧЕНИЙ (ПРОВЕРКИ ДАННЫХ) ==========\n");
+
+        try {
+            Product badName = new SimpleProduct("", 100);
+            System.out.println("Продукт создан (не должно быть видно)");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        try {
+            Product badPrice = new SimpleProduct("Яблоко", 0);
+            System.out.println("Продукт создан (не должно быть видно)");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        try {
+            Product badDiscounted = new DiscountedProduct("Скидка на квартиру в центре Питера", 100, 200);
+            System.out.println("Продукт создан (не должно быть видно)");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        try {
+            Product correct = new SimpleProduct("Квартира в центре Питера", 100);
+            System.out.println("Корректный продукт создан: " + correct.getName());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ МЕТОДА relevant ==========\n");
+
+        try {
+            Searchable found = engine.relevant("яблоко");
+            System.out.println("Найден подходящий объект для 'яблоко': " + found.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Searchable found = engine.relevant("арбуз");
+            System.out.println("Найден подходящий объект для 'арбуз': " + found.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Searchable found = engine.relevant("");
+            System.out.println("Найден подходящий объект для '' : " + found.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        System.out.println("\n========== ВСЕ ДЕМОНСТРАЦИИ ЗАВЕРШЕНЫ ==========");
     }
 
     private static void printSearchResults(Searchable[] results) {
