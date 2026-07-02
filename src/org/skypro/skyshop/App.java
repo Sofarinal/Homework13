@@ -8,16 +8,18 @@ import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.Article.Article;
 import org.skypro.skyshop.search.Searchable;
+import org.skypro.skyshop.search.BestResultNotFound;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
 
-       Product apple = new SimpleProduct("Яблоко", 50);
-       Product banana = new DiscountedProduct("Банан", 80, 50);
-       Product milk = new SimpleProduct("Молоко", 120);
-       Product bread = new FixPriceProduct("Хлеб");
-       Product cheese = new SimpleProduct("Сыр", 350);
-       Product chocolate = new SimpleProduct("Шоколад", 150);
+        Product apple = new SimpleProduct("Яблоко", 50);
+        Product banana = new DiscountedProduct("Банан", 80, 50);
+        Product milk = new SimpleProduct("Молоко", 120);
+        Product bread = new FixPriceProduct("Хлеб");
+        Product cheese = new SimpleProduct("Сыр", 350);
+        Product chocolate = new SimpleProduct("Шоколад", 150);
 
 
         ProductBasket basket = new ProductBasket();
@@ -107,18 +109,115 @@ public class App {
         System.out.println("\nЗапрос: \"несуществующий\"");
         printSearchResults(engine.search("несуществующий"));
 
-    }
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ ЗАВЕРШЕНА ==========");
 
-    private static void printSearchResults(Searchable[] results) {
-        boolean found = false;
-        for (Searchable item : results) {
-            if (item != null) {
-                System.out.println("  - " + item.getStringRepresentation());
-                found = true;
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ ИСКЛЮЧЕНИЙ (ПРОВЕРКИ ДАННЫХ) ==========\n");
+
+        try {
+            Product badName = new SimpleProduct("", 100);
+            System.out.println("Продукт создан (не должно быть видно)");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        try {
+            Product badPrice = new SimpleProduct("Яблоко", 0);
+            System.out.println("Продукт создан (не должно быть видно)");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        try {
+            Product badDiscounted = new DiscountedProduct("Скидка на квартиру в центре Питера", 100, 200);
+            System.out.println("Продукт создан (не должно быть видно)");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        try {
+            Product correct = new SimpleProduct("Квартира в центре Питера", 100);
+            System.out.println("Корректный продукт создан: " + correct.getName());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при создании продукта: " + e.getMessage());
+        }
+
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ МЕТОДА relevant ==========\n");
+
+        try {
+            Searchable found = engine.relevant("яблоко");
+            System.out.println("Найден подходящий объект для 'яблоко': " + found.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Searchable found = engine.relevant("арбуз");
+            System.out.println("Найден подходящий объект для 'арбуз': " + found.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        try {
+            Searchable found = engine.relevant("");
+            System.out.println("Найден подходящий объект для '' : " + found.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ ЗАВЕРШЕНА ==========");
+
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ УДАЛЕНИЕ КОРЗИНЫ ==========");
+
+        ProductBasket basketForRemove = new ProductBasket();
+        basketForRemove.addProduct(new SimpleProduct("Яблоко", 50));
+        basketForRemove.addProduct(new SimpleProduct("Банан", 80));
+        basketForRemove.addProduct(new SimpleProduct("Молоко", 120));
+        basketForRemove.addProduct(new SimpleProduct("Молоко", 150));
+        basketForRemove.addProduct(new SimpleProduct("Хлеб", 60));
+
+        System.out.println("\nИсходное содержимое корзины:");
+        basketForRemove.printBasket();
+
+        System.out.println("\n1. Удаляем продукт 'Молоко':");
+        List<Product> removed = basketForRemove.removeProduct("Молоко");
+        System.out.println("   Удалены следующие продукты:");
+        if (removed.isEmpty()) {
+            System.out.println("   (пусто)");
+        } else {
+            for (Product p : removed) {
+                System.out.println("   - " + p.getName() + " (" + p.getPrice() + " руб.)");
             }
         }
-        if (!found) {
-            System.out.println("  Ничего не найдено.");
+
+        System.out.println("\nСодержимое корзины после удаления:");
+        basketForRemove.printBasket();
+
+        System.out.println("\n2. Удаляем несуществующий продукт 'Печенье':");
+        List<Product> removedEmpty = basketForRemove.removeProduct("Печенье");
+        System.out.println("   Удалены следующие продукты:");
+        if (removedEmpty.isEmpty()) {
+            System.out.println("   Список пуст.");
+        } else {
+            for (Product p : removedEmpty) {
+                System.out.println("   - " + p.getName());
+            }
         }
+
+        System.out.println("\nСодержимое корзины после попытки удаления несуществующего продукта:");
+        basketForRemove.printBasket();
+
+        System.out.println("\n========== ДЕМОНСТРАЦИЯ УДАЛЕНИЯ ЗАВЕРШЕНА ==========");
+
+    }
+
+    private static void printSearchResults(List<Searchable> results) {
+        if (results.isEmpty()) {
+            System.out.println("  Ничего не найдено.");
+        } else {
+            for (Searchable item : results) {
+                System.out.println("  - " + item.getStringRepresentation());
+            }
+        }
+        System.out.println();
     }
 }
