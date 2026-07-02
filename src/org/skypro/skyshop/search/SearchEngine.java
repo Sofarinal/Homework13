@@ -32,4 +32,40 @@ public class SearchEngine {
         }
         return results;
     }
+
+    public Searchable relevant (String query) throws BestResultNotFound{
+        if (query == null || query.isEmpty()){
+            throw new BestResultNotFound(query);
+        }
+
+        Searchable coincidence = null;
+        int maxCount = 0;
+        String lowerQuery = query.toLowerCase();
+
+        for (int i = 0; i < size; i++) {
+            Searchable current = items[i];
+            String term = current.getSearchTerm().toLowerCase();
+            int count = counting(term, lowerQuery);
+            if (count > maxCount){
+                maxCount = count;
+                coincidence = current;
+            }
+        }
+        if (coincidence == null){
+            throw new BestResultNotFound(query);
+        }
+        return coincidence;
+    }
+
+    private int counting (String text, String sub){
+        if (sub.isEmpty()) return 0;
+        int count = 0;
+        int index = 0;
+
+        while ((index = text.indexOf(sub, index)) != -1){
+            count++;
+            index += sub.length();
+        }
+        return count;
+    }
 }
